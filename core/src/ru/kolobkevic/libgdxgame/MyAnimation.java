@@ -14,7 +14,14 @@ public class MyAnimation {
         img = new Texture(name);
         TextureRegion reg1 = new TextureRegion(img);
         TextureRegion[][] regions = reg1.split(img.getWidth() / col, img.getHeight() / row);
-        animation = new Animation<>(1 / fps, regions[0]);
+        TextureRegion[] tmp = new TextureRegion[regions.length*regions[0].length];
+        int a = 0;
+        for (TextureRegion[] region: regions){
+            for (TextureRegion reg: region) {
+                tmp[a++] = reg;
+            }
+        }
+        animation = new Animation<>(1/fps, tmp);
         animation.setPlayMode(playMode);
     }
 
