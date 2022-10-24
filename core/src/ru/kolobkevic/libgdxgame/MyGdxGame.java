@@ -9,6 +9,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -28,9 +31,13 @@ public class MyGdxGame extends ApplicationAdapter {
     private OrthographicCamera camera;
     private PhysX physX;
     private Body body;
+    private TiledMap baseMap;
+    private OrthogonalTiledMapRenderer mapRenderer;
 
     @Override
     public void create() {
+        baseMap = new TmxMapLoader().load("map/BaseMap.tmx");
+        mapRenderer = new OrthogonalTiledMapRenderer(baseMap);
         physX = new PhysX();
         BodyDef def = new BodyDef();
         FixtureDef fdef = new FixtureDef();
@@ -77,14 +84,13 @@ public class MyGdxGame extends ApplicationAdapter {
         myInputProcessor = new MyInputProcessor();
         Gdx.input.setInputProcessor(myInputProcessor);
 
-//        music = Gdx.audio.newMusic(Gdx.files.internal("Juhani Junkala Title Screen.wav"));
         music = Gdx.audio.newMusic(Gdx.files.internal("Juhani-Junkala-Title-Screen.mp3"));
         music.setVolume(1);
         music.setLooping(true);
         music.play();
         System.out.println(music.isPlaying());
 
-        sound = Gdx.audio.newSound(Gdx.files.internal("Car_accelerating.wav"));
+        sound = Gdx.audio.newSound(Gdx.files.internal("Car_accelerating.mp3"));
 
         batch = new SpriteBatch();
         run = new MyAtlasAnimation("atlas/myAtlas.atlas", "run", 10, Animation.PlayMode.LOOP);
@@ -102,6 +108,9 @@ public class MyGdxGame extends ApplicationAdapter {
         camera.position.y = body.getPosition().y;
         camera.zoom = 1;
         camera.update();
+
+        mapRenderer.setView(camera);
+        mapRenderer.render();
 
         tmpAnim = stand;
 
@@ -143,16 +152,22 @@ public class MyGdxGame extends ApplicationAdapter {
             tmpAnim.draw().flip(true, false);
         }
 
-        float x = body.getPosition().x - 2.5f/camera.zoom;
-        float y = body.getPosition().y - 2.5f/camera.zoom;
+        float x = body.getPosition().x - 2.5f / camera.zoom;
+        float y = body.getPosition().y - 2.5f / camera.zoom;
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(tmpAnim.draw(), x, y);
         batch.end();
 
-        physX.step();
+//        physX.step();
         physX.debugDraw(camera);
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        camera.viewportHeight = height;
+        camera.viewportWidth = width;
     }
 
     @Override
@@ -165,6 +180,7 @@ public class MyGdxGame extends ApplicationAdapter {
         stand.dispose();
         tmpAnim.dispose();
         physX.dispose();
-
+        baseMap.dispose();
+        mapRenderer.dispose();
     }
 }
