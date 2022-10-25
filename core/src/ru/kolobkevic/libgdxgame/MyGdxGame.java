@@ -124,7 +124,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
         camera.position.x = body.getPosition().x;
         camera.position.y = body.getPosition().y;
-        camera.zoom = 5;
+        camera.zoom = 4;
         camera.update();
 
         mapRenderer.setView(camera);
@@ -178,7 +178,7 @@ public class MyGdxGame extends ApplicationAdapter {
         batch.draw(tmpAnim.draw(), x, y);
         batch.end();
 
-        physX.step();
+//        physX.step();
         physX.debugDraw(camera);
     }
 
