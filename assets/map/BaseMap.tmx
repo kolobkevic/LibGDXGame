@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="128" tileheight="128" infinite="0" nextlayerid="3" nextobjectid="1">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="128" tileheight="128" infinite="0" nextlayerid="8" nextobjectid="14">
  <tileset firstgid="1" name="spritesheet_tiles" tilewidth="128" tileheight="128" spacing="2" tilecount="465" columns="31">
   <image source="spritesheet_tiles.png" width="4096" height="2048"/>
+ </tileset>
+ <tileset firstgid="466" name="spritesheet_vehicles" tilewidth="71" tileheight="131" spacing="2" tilecount="42" columns="14">
+  <image source="spritesheet_vehicles.png" width="1024" height="512"/>
  </tileset>
  <layer id="1" name="Слой тайлов 1" width="30" height="20">
   <data encoding="base64" compression="zlib">
    eJxzZGBYwMzAcICRgYGBHlgJaJcjEDsBcSVQgJ4Y6M+EGXS2E4SjgBjZ3kSg36WBNC1wA1K4otsL4j9joA1Gt2fUXgh2g2J0/ehibljUYhMjxV50e/CJ4XMbpf4lxV5q+xdbmFLbv8SGMzXjl9p41N6BtxdYLywAUljrzVs4xInFDcC6D5e9+PBuBurWg/OJNI+a9gLbGgyODGB6AaH6cw4DdephYFuDYQuQBgDpNFI1
   </data>
  </layer>
+ <objectgroup id="3" name="ObjectsStatic">
+  <object id="12" gid="466" x="2843" y="2220" width="71" height="131"/>
+  <object id="13" gid="466" x="2481" y="2352" width="71" height="131" rotation="180"/>
+ </objectgroup>
+ <objectgroup id="4" name="ObjectsDynamic">
+  <object id="9" gid="467" x="1919" y="2318" width="71" height="131" rotation="90"/>
+  <object id="10" gid="467" x="2175" y="2094" width="71" height="131" rotation="90"/>
+  <object id="11" gid="467" x="2817" y="2356" width="71" height="131" rotation="-90"/>
+ </objectgroup>
+ <objectgroup id="7" name="Hero">
+  <object id="8" gid="466" x="1409" y="2206" width="71" height="131" rotation="90"/>
+ </objectgroup>
 </map>

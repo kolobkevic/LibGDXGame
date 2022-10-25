@@ -6,22 +6,22 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class MyGdxGame extends ApplicationAdapter {
     private SpriteBatch batch;
-    private Texture img;
     private MyAtlasAnimation stand, run, tmpAnim;
     private Music music;
     private Sound sound;
@@ -38,39 +38,57 @@ public class MyGdxGame extends ApplicationAdapter {
     public void create() {
         baseMap = new TmxMapLoader().load("map/BaseMap.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(baseMap);
+
         physX = new PhysX();
+
         BodyDef def = new BodyDef();
         FixtureDef fdef = new FixtureDef();
-
-        def.gravityScale = 1;
-        def.type = BodyDef.BodyType.StaticBody;
-        def.position.set(0, 0);
-
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(200, 10);
+
+        def.type = BodyDef.BodyType.StaticBody;
         fdef.shape = shape;
         fdef.density = 1;
         fdef.friction = 0;
         fdef.restitution = 1;
 
-        physX.getWorld().createBody(def).createFixture(fdef).setUserData("Kubik");
-
-        def.type = BodyDef.BodyType.DynamicBody;
-        def.gravityScale = 5;
-        for (int i = 0; i < 50; i++) {
-            def.position.set(MathUtils.random(-100, 100), MathUtils.random(100, 200));
-
-            shape.setAsBox(10, 10);
-            fdef.shape = shape;
-            fdef.density = 1;
-            fdef.friction = 0;
-            fdef.restitution = 1;
-
+        MapLayer environment = baseMap.getLayers().get("ObjectsStatic");
+        Array<RectangleMapObject> rectArray = environment.getObjects().getByType(RectangleMapObject.class);
+        for (int i = 0; i < rectArray.size; i++) {
+            float x = rectArray.get(i).getRectangle().x;
+            float y = rectArray.get(i).getRectangle().y;
+            float w = rectArray.get(i).getRectangle().width / 2;
+            float h = rectArray.get(i).getRectangle().height / 2;
+            def.position.set(x, y);
+            shape.setAsBox(w, h);
             physX.getWorld().createBody(def).createFixture(fdef).setUserData("Kubik");
         }
 
-        def.position.set(MathUtils.random(-100, 100), MathUtils.random(100, 200));
-        shape.setAsBox(10, 10);
+        def.type = BodyDef.BodyType.DynamicBody;
+        def.gravityScale = 1;
+        environment = baseMap.getLayers().get("ObjectsDynamic");
+        rectArray = environment.getObjects().getByType(RectangleMapObject.class);
+        for (int i = 0; i < rectArray.size; i++) {
+            float x = rectArray.get(i).getRectangle().x;
+            float y = rectArray.get(i).getRectangle().y;
+            float w = rectArray.get(i).getRectangle().width / 2;
+            float h = rectArray.get(i).getRectangle().height / 2;
+            def.position.set(x, y);
+            shape.setAsBox(w, h);
+            fdef.density = 1;
+            fdef.friction = 0;
+            fdef.restitution = 1;
+            physX.getWorld().createBody(def).createFixture(fdef).setUserData("Kubik");
+        }
+
+        environment = baseMap.getLayers().get("Hero");
+        RectangleMapObject hero = (RectangleMapObject) environment.getObjects().get("Hero");
+        float x = hero.getRectangle().x;
+        float y = hero.getRectangle().y;
+        float w = hero.getRectangle().width / 2;
+        float h = hero.getRectangle().height / 2;
+
+        def.position.set(x, y);
+        shape.setAsBox(w, h);
         fdef.shape = shape;
         fdef.density = 1;
         fdef.friction = 0;
@@ -85,7 +103,7 @@ public class MyGdxGame extends ApplicationAdapter {
         Gdx.input.setInputProcessor(myInputProcessor);
 
         music = Gdx.audio.newMusic(Gdx.files.internal("Juhani-Junkala-Title-Screen.mp3"));
-        music.setVolume(1);
+        music.setVolume(0.1f);
         music.setLooping(true);
         music.play();
         System.out.println(music.isPlaying());
@@ -106,7 +124,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
         camera.position.x = body.getPosition().x;
         camera.position.y = body.getPosition().y;
-        camera.zoom = 1;
+        camera.zoom = 5;
         camera.update();
 
         mapRenderer.setView(camera);
@@ -160,7 +178,7 @@ public class MyGdxGame extends ApplicationAdapter {
         batch.draw(tmpAnim.draw(), x, y);
         batch.end();
 
-//        physX.step();
+        physX.step();
         physX.debugDraw(camera);
     }
 
@@ -175,7 +193,6 @@ public class MyGdxGame extends ApplicationAdapter {
         sound.dispose();
         music.dispose();
         batch.dispose();
-        img.dispose();
         run.dispose();
         stand.dispose();
         tmpAnim.dispose();
