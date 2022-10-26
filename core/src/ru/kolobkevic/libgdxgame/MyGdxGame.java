@@ -136,23 +136,7 @@ public class MyGdxGame extends ApplicationAdapter {
             sound.stop();
             sound.play(1);
         }
-        if (myInputProcessor.getOutString().contains("A")) {
-            look = -1;
-            tmpAnim = run;
-        }
-        if (myInputProcessor.getOutString().contains("D")) {
-            look = 1;
-            tmpAnim = run;
-        }
-        if (myInputProcessor.getOutString().contains("W")) {
-            y++;
-        }
-        if (myInputProcessor.getOutString().contains("Space")) {
-            x = Gdx.graphics.getWidth() / 2.0f;
-            y = Gdx.graphics.getHeight() / 2.0f;
-        } else if (myInputProcessor.getOutString().contains("S")) {
-            y--;
-        }
+
 
         if (look == 1 & tmpAnim == run) {
             x++;
