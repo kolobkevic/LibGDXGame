@@ -8,7 +8,6 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -45,66 +44,20 @@ public class GameScreen implements Screen {
 
         baseMap = new TmxMapLoader().load("map/BaseMap.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(baseMap);
-
         physX = new PhysX();
+
+        Array<RectangleMapObject> rectObjects = baseMap.getLayers().get("ObjectsStatic").getObjects().getByType(RectangleMapObject.class);
+        rectObjects.addAll(baseMap.getLayers().get("ObjectsDynamic").getObjects().getByType(RectangleMapObject.class));
+        for (int i = 0; i < rectObjects.size; i++) {
+            physX.addObject(rectObjects.get(i));
+        }
+
+        body = physX.addObject((RectangleMapObject) baseMap.getLayers().get("Hero").getObjects().get("Hero"));
+        body.setFixedRotation(true);
 
         BodyDef def = new BodyDef();
         FixtureDef fdef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
-
-        def.type = BodyDef.BodyType.StaticBody;
-        fdef.shape = shape;
-        fdef.density = 1;
-        fdef.friction = 0;
-        fdef.restitution = 1;
-
-        MapLayer environment = baseMap.getLayers().get("ObjectsStatic");
-        Array<RectangleMapObject> rectArray = environment.getObjects().getByType(RectangleMapObject.class);
-        for (int i = 0; i < rectArray.size; i++) {
-            float x = rectArray.get(i).getRectangle().x;
-            float y = rectArray.get(i).getRectangle().y;
-            float w = rectArray.get(i).getRectangle().width / 2;
-            float h = rectArray.get(i).getRectangle().height / 2;
-            def.position.set(x, y);
-            shape.setAsBox(w, h);
-            physX.getWorld().createBody(def).createFixture(fdef).setUserData("Kubik");
-        }
-
-        def.type = BodyDef.BodyType.DynamicBody;
-        def.gravityScale = 1;
-        environment = baseMap.getLayers().get("ObjectsDynamic");
-        rectArray = environment.getObjects().getByType(RectangleMapObject.class);
-        for (int i = 0; i < rectArray.size; i++) {
-            float x = rectArray.get(i).getRectangle().x;
-            float y = rectArray.get(i).getRectangle().y;
-            float w = rectArray.get(i).getRectangle().width / 2;
-            float h = rectArray.get(i).getRectangle().height / 2;
-            def.position.set(x, y);
-            shape.setAsBox(w, h);
-            fdef.density = 1;
-            fdef.friction = 0;
-            fdef.restitution = 1;
-            physX.getWorld().createBody(def).createFixture(fdef).setUserData("Kubik");
-        }
-
-        environment = baseMap.getLayers().get("Hero");
-        RectangleMapObject hero = (RectangleMapObject) environment.getObjects().get("Hero");
-        float x = hero.getRectangle().x;
-        float y = hero.getRectangle().y;
-        float w = hero.getRectangle().width / 2;
-        float h = hero.getRectangle().height / 2;
-
-        def.position.set(x, y);
-        shape.setAsBox(w, h);
-        fdef.shape = shape;
-        fdef.density = 1;
-        fdef.friction = 0;
-        fdef.restitution = 1;
-
-        body = physX.getWorld().createBody(def);
-        body.createFixture(fdef).setUserData("Kubik");
-
-        shape.dispose();
 
         myInputProcessor = new MyInputProcessor();
         Gdx.input.setInputProcessor(myInputProcessor);

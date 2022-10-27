@@ -12,17 +12,73 @@
   </data>
  </layer>
  <objectgroup id="3" name="ObjectsStatic">
-  <object id="18" x="1982" y="2476" width="32" height="32"/>
-  <object id="22" x="1982" y="2134" width="32" height="32"/>
-  <object id="23" x="2474" y="2134" width="32" height="32"/>
-  <object id="24" x="2480" y="2496" width="32" height="32"/>
+  <object id="18" x="1982" y="2476" width="32" height="32">
+   <properties>
+    <property name="BodyType" value="StaticBody"/>
+    <property name="friction" type="float" value="0"/>
+    <property name="gravityScale" type="float" value="1"/>
+    <property name="restitution" type="float" value="1"/>
+   </properties>
+  </object>
+  <object id="22" x="1982" y="2134" width="32" height="32">
+   <properties>
+    <property name="BodyType" value="StaticBody"/>
+    <property name="friction" type="float" value="0"/>
+    <property name="gravityScale" type="float" value="1"/>
+    <property name="restitution" type="float" value="1"/>
+   </properties>
+  </object>
+  <object id="23" x="2474" y="2134" width="32" height="32">
+   <properties>
+    <property name="BodyType" value="StaticBody"/>
+    <property name="friction" type="float" value="0"/>
+    <property name="gravityScale" type="float" value="1"/>
+    <property name="restitution" type="float" value="1"/>
+   </properties>
+  </object>
+  <object id="24" x="2480" y="2496" width="32" height="32">
+   <properties>
+    <property name="BodyType" value="StaticBody"/>
+    <property name="friction" type="float" value="0"/>
+    <property name="gravityScale" type="float" value="1"/>
+    <property name="restitution" type="float" value="1"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="4" name="ObjectsDynamic">
-  <object id="15" x="2218" y="2146" width="32" height="32"/>
-  <object id="16" x="2208" y="2376" width="32" height="32"/>
-  <object id="17" x="2220" y="2248" width="32" height="32"/>
+  <object id="15" x="2218" y="2146" width="32" height="32">
+   <properties>
+    <property name="BodyType" value="DynamicBody"/>
+    <property name="friction" type="float" value="0"/>
+    <property name="gravityScale" type="float" value="1"/>
+    <property name="restitution" type="float" value="1"/>
+   </properties>
+  </object>
+  <object id="16" x="2208" y="2376" width="32" height="32">
+   <properties>
+    <property name="BodyType" value="DynamicBody"/>
+    <property name="friction" type="float" value="0"/>
+    <property name="gravityScale" type="float" value="1"/>
+    <property name="restitution" type="float" value="1"/>
+   </properties>
+  </object>
+  <object id="17" x="2220" y="2248" width="32" height="32">
+   <properties>
+    <property name="BodyType" value="DynamicBody"/>
+    <property name="friction" type="float" value="0"/>
+    <property name="gravityScale" type="float" value="1"/>
+    <property name="restitution" type="float" value="1"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="7" name="Hero">
-  <object id="14" name="Hero" x="1592" y="2252" width="32" height="32"/>
+  <object id="14" name="Hero" x="1592" y="2252" width="32" height="32">
+   <properties>
+    <property name="BodyType" value="DynamicBody"/>
+    <property name="friction" type="float" value="0"/>
+    <property name="gravityScale" type="float" value="1"/>
+    <property name="restitution" type="float" value="1"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
