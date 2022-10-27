@@ -20,16 +20,16 @@ public class MyInputProcessor implements InputProcessor {
         String inKey = Input.Keys.toString(keycode).toUpperCase();
         switch (inKey) {
             case "LEFT":
-                outForce.add(-100000.5f, 0);
+                outForce.add(-0.5f, 0);
                 break;
             case "RIGHT":
-                outForce.add(100000.5f, 0);
+                outForce.add(0.5f, 0);
                 break;
             case "DOWN":
-                outForce.add(0, -100000.5f);
+                outForce.add(0, -0.5f);
                 break;
             case "SPACE":
-                outForce.add(0, 100000.5f);
+                outForce.add(0, 0.5f);
                 break;
         }
         return true;

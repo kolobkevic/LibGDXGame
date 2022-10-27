@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class PhysX {
     private final World world;
+    public final float PPM = 100;
     private final Box2DDebugRenderer debugRenderer;
 
     public World getWorld() {
@@ -47,9 +48,9 @@ public class PhysX {
             def.type = BodyDef.BodyType.DynamicBody;
         }
 
-        def.position.set(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2);
+        def.position.set((rectangle.x + rectangle.width / 2) / PPM, (rectangle.y + rectangle.height / 2) / PPM);
         def.gravityScale = (float) rectangleMapObject.getProperties().get("gravityScale");
-        shape.setAsBox(rectangle.getWidth() / 2, rectangle.getHeight() / 2);
+        shape.setAsBox(rectangle.getWidth() / 2 / PPM, rectangle.getHeight() / 2 / PPM);
         fdef.shape = shape;
         fdef.friction = (float) rectangleMapObject.getProperties().get("friction");
         fdef.density = 1;

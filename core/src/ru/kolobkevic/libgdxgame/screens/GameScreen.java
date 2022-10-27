@@ -89,8 +89,8 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         ScreenUtils.clear(1, 1, 1, 1);
 
-        camera.position.x = body.getPosition().x;
-        camera.position.y = body.getPosition().y;
+        camera.position.x = body.getPosition().x * physX.PPM;
+        camera.position.y = body.getPosition().y * physX.PPM;
         camera.zoom = 2;
         camera.update();
 
@@ -113,8 +113,8 @@ public class GameScreen implements Screen {
             manAssets.get(actions).draw().flip(true, false);
         }
 
-        float x = body.getPosition().x - 2.5f/camera.zoom;
-        float y = body.getPosition().y - 2.5f/camera.zoom;
+        float x = body.getPosition().x * physX.PPM - 2.5f / camera.zoom;
+        float y = body.getPosition().y * physX.PPM - 2.5f / camera.zoom;
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
