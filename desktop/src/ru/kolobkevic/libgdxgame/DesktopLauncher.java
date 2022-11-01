@@ -2,7 +2,6 @@ package ru.kolobkevic.libgdxgame;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import ru.kolobkevic.libgdxgame.MyGdxGame;
 
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
 public class DesktopLauncher {
@@ -12,6 +11,6 @@ public class DesktopLauncher {
 		config.setTitle("My GDX Game");
 		config.setWindowedMode(800,600);
 		config.setAudioConfig(32, 512, 9);
-		new Lwjgl3Application(new MyGdxGame(), config);
+		new Lwjgl3Application(new Main(), config);
 	}
 }
