@@ -5,9 +5,13 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
+
 public class PhysX {
+    public final MyContactListener contactListener;
     private final World world;
     public final static float PPM = 100;
     private final Box2DDebugRenderer debugRenderer;
@@ -19,6 +23,19 @@ public class PhysX {
     public PhysX() {
         world = new World(new Vector2(0, -9.81f), true);
         debugRenderer = new Box2DDebugRenderer();
+        contactListener = new MyContactListener();
+        world.setContactListener(contactListener);
+    }
+    public Array<Body> getBodies(String name){
+        Array<Body> tmp = new Array<>();
+        world.getBodies(tmp);
+        Iterator<Body> iterator = tmp.iterator();
+        while (iterator.hasNext()){
+            Body body = iterator.next();
+            if (!body.getUserData().equals(name))
+                iterator.remove();
+        }
+        return tmp;
     }
 
     public void debugDraw(@NotNull OrthographicCamera camera) {
@@ -27,11 +44,6 @@ public class PhysX {
 
     public void step() {
         world.step(1 / 60f, 3, 3);
-    }
-
-    public void dispose() {
-        this.world.dispose();
-        this.debugRenderer.dispose();
     }
 
     public Body addObject(@NotNull RectangleMapObject rectangleMapObject) {
@@ -63,9 +75,18 @@ public class PhysX {
         Body body;
         body = world.createBody(def);
         body.createFixture(fdef);
-        body.setUserData("body");
+        body.setUserData(name);
         body.createFixture(fdef).setUserData(name);
         shape.dispose();
         return body;
+    }
+
+    public void deleteBody(Body body){
+        world.destroyBody(body);
+    }
+
+    public void dispose() {
+        this.world.dispose();
+        this.debugRenderer.dispose();
     }
 }
