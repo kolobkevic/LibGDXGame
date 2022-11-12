@@ -80,8 +80,8 @@ public class MyGdxGame extends ApplicationAdapter {
             physX.getWorld().createBody(def).createFixture(fdef).setUserData("Kubik");
         }
 
-        environment = baseMap.getLayers().get("Hero");
-        RectangleMapObject hero = (RectangleMapObject) environment.getObjects().get("Hero");
+        environment = baseMap.getLayers().get("ru.kolobkevic.libgdxgame.Hero");
+        RectangleMapObject hero = (RectangleMapObject) environment.getObjects().get("ru.kolobkevic.libgdxgame.Hero");
         float x = hero.getRectangle().x;
         float y = hero.getRectangle().y;
         float w = hero.getRectangle().width / 2;

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="128" tileheight="128" infinite="0" nextlayerid="8" nextobjectid="40">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="128" tileheight="128" infinite="0" nextlayerid="9" nextobjectid="40">
  <tileset firstgid="1" name="spritesheet_tiles" tilewidth="128" tileheight="128" spacing="2" tilecount="465" columns="31">
   <image source="spritesheet_tiles.png" width="4096" height="2048"/>
  </tileset>
  <tileset firstgid="466" name="spritesheet_vehicles" tilewidth="71" tileheight="131" spacing="2" tilecount="42" columns="14">
   <image source="spritesheet_vehicles.png" width="1024" height="512"/>
  </tileset>
- <layer id="1" name="Слой тайлов 1" width="30" height="20">
+ <layer id="1" name="t0" width="30" height="20">
   <data encoding="base64" compression="zlib">
    eJxzZGBYwMzAcICRgYGBHlgJaJcjEDsBcSVQgJ4Y6M+EGXS2E4SjgBjZ3kSg36WBNC1wA1K4otsL4j9joA1Gt2fUXgh2g2J0/ehibljUYhMjxV50e/CJ4XMbpf4lxV5q+xdbmFLbv8SGMzXjl9p41N6BtxdYLywAUljrzVs4xInFDcC6D5e9+PBuBurWg/OJNI+a9gLbGgyODGB6AaH6cw4DdephYFuDYQuQBgDpNFI1
   </data>
@@ -171,8 +171,8 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="7" name="Hero">
-  <object id="14" name="Hero" x="1392.67" y="2287.33" width="32" height="32">
+ <objectgroup id="7" name="hero">
+  <object id="14" name="hero" x="1392.67" y="2287.33" width="32" height="32">
    <properties>
     <property name="BodyType" value="DynamicBody"/>
     <property name="friction" type="float" value="0"/>
@@ -181,4 +181,9 @@
    </properties>
   </object>
  </objectgroup>
+ <layer id="8" name="front" width="30" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIJRMApGwWAHUxhH7R1K9gIAVCoCVQ==
+  </data>
+ </layer>
 </map>

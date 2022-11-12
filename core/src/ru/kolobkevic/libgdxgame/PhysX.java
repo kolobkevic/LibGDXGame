@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class PhysX {
     private final World world;
-    public final float PPM = 100;
+    public final static float PPM = 100;
     private final Box2DDebugRenderer debugRenderer;
 
     public World getWorld() {

@@ -1,5 +1,5 @@
 package ru.kolobkevic.libgdxgame.enums;
 
 public enum Actions {
-    RUN, STAND
+    RUN, STAND, DEATH, JUMP
 }
