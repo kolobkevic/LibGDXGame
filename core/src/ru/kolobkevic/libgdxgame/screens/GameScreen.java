@@ -15,14 +15,12 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import ru.kolobkevic.libgdxgame.Hero;
-import ru.kolobkevic.libgdxgame.MyAnimation;
-import ru.kolobkevic.libgdxgame.MyInputProcessor;
-import ru.kolobkevic.libgdxgame.PhysX;
+import ru.kolobkevic.libgdxgame.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,12 +102,18 @@ public class GameScreen implements Screen {
         mapRenderer.render(tL);
 
         hero.setTime(delta);
-        body.applyForceToCenter(myInputProcessor.getOutForce(), true);
+        Vector2 vector = myInputProcessor.getOutForce();
+        if (MyContactListener.cnt < 1){
+            vector.set(vector.x, 0);
+        }
+        body.applyForceToCenter(vector, true);
         hero.setFPS(body.getLinearVelocity(),true);
 
         Rectangle tmp = hero.getRect(camera);
         float bScale = 0.2f;
         ((PolygonShape) body.getFixtureList().get(0).getShape()).setAsBox(tmp.getWidth()/2, tmp.getHeight()/2);
+        ((PolygonShape) body.getFixtureList().get(1).getShape()).setAsBox(tmp.getWidth()/3, tmp.getHeight()/10,
+                new Vector2(0, -tmp.height/2), 0);
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(hero.getFrame(), tmp.x, tmp.y, tmp.width * PhysX.PPM/bScale, tmp.height * PhysX.PPM/bScale);
@@ -136,7 +140,7 @@ public class GameScreen implements Screen {
         }
         bodyToDelete.clear();
         physX.step();
-//        physX.debugDraw(camera);
+        physX.debugDraw(camera);
     }
 
     @Override
@@ -162,13 +166,14 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        sound.dispose();
-        music.dispose();
         batch.dispose();
+        music.dispose();
+        sound.dispose();
         physX.dispose();
         baseMap.dispose();
         mapRenderer.dispose();
-        coinAnim.dispose();
         hero.dispose();
+        coinAnim.dispose();
+        bodyToDelete.clear();
     }
 }

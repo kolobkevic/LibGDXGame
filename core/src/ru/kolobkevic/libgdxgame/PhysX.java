@@ -77,6 +77,11 @@ public class PhysX {
         body.createFixture(fdef);
         body.setUserData(name);
         body.createFixture(fdef).setUserData(name);
+        if(name.equals("hero")){
+            shape.setAsBox(rectangle.getWidth() / 3 / PPM, rectangle.getHeight() / 10 / PPM, new Vector2(0, -rectangle.width/2), 0);
+            body.createFixture(fdef).setUserData("legs");
+            body.getFixtureList().get(1).setSensor(true);
+        }
         shape.dispose();
         return body;
     }

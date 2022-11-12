@@ -38,10 +38,6 @@ public class Hero {
         dir = Dir.RIGHT;
     }
 
-    public static boolean isCanJump() {
-        return canJump;
-    }
-
     public static void setCanJump(boolean isJump) {
         canJump = isJump;
     }
@@ -67,7 +63,7 @@ public class Hero {
             setState(Actions.RUN);
             baseAnim.setFrameDuration(1 / tmp);
         }
-        if (Math.abs(vector.y) > 1 && !onGround) {
+        if (Math.abs(vector.y) > 1 && canJump) {
             setState(Actions.JUMP);
             baseAnim.setFrameDuration(FPS);
         }

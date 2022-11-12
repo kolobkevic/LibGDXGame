@@ -16,7 +16,7 @@
    <properties>
     <property name="BodyType" value="StaticBody"/>
     <property name="friction" type="float" value="0.3"/>
-    <property name="gravityScale" type="float" value="0"/>
+    <property name="gravityScale" type="float" value="1"/>
     <property name="restitution" type="float" value="0.1"/>
    </properties>
   </object>
