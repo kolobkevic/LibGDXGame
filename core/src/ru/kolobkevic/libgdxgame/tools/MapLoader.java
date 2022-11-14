@@ -45,6 +45,7 @@ public class MapLoader implements Disposable {
 
     @Override
     public void dispose() {
+        mWorld.dispose();
         mMap.dispose();
     }
 }

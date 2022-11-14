@@ -36,9 +36,10 @@ public class GameScreen extends AbstractScreen {
         mBdr = new Box2DDebugRenderer();
         mCamera = new OrthographicCamera();
         mCamera.zoom = DEFAULT_ZOOM;
-        mViewport = new FitViewport(800 / PPM, 600 / PPM, mCamera);
+        mViewport = new FitViewport(640 / PPM, 480 / PPM, mCamera);
         mMapLoader = new MapLoader(mWorld);
         mPlayer = mMapLoader.getPlayer();
+        mPlayer.setLinearDamping(0.5f);
     }
 
     @Override
@@ -54,28 +55,48 @@ public class GameScreen extends AbstractScreen {
         processInput();
         System.out.println(mPlayer.getAngularVelocity());
         update(delta);
+        handleDrift();
         draw();
     }
 
+    private void handleDrift() {
+        Vector2 forwardSpeed = getForwardVelocity();
+        Vector2 lateralSpeed = getLateralVelocity();
+        mPlayer.setLinearVelocity(forwardSpeed.x + lateralSpeed.x * DRIFT,
+                forwardSpeed.y + lateralSpeed.y * DRIFT);
+    }
+
     private void processInput() {
-        Vector2 baseVector = new Vector2(0,0);
+        Vector2 baseVector = new Vector2(0, 0);
         if (turnDirection == Turn.LEFT) {
-            mPlayer.setAngularVelocity(-ANGULAR_VELOCITY);
+            mPlayer.setAngularVelocity(-TURN_SPEED);
         } else if (turnDirection == Turn.RIGHT) {
-            mPlayer.setAngularVelocity(ANGULAR_VELOCITY);
+            mPlayer.setAngularVelocity(TURN_SPEED);
         } else if (turnDirection == Turn.NONE && mPlayer.getAngularVelocity() != 0) {
             mPlayer.setAngularVelocity(0f);
         }
 
         if (driveDirection == Drive.FORWARD) {
-            baseVector.set(0, 200f);
+            baseVector.set(0, DRIVE_SPEED);
         } else if (driveDirection == Drive.BACKWARD) {
-            baseVector.set(0, -200f);
+            baseVector.set(0, -DRIVE_SPEED);
         }
 
-        if (!baseVector.isZero()){
+        if (!baseVector.isZero() && mPlayer.getLinearVelocity().len() < SLIDE_SPEED) {
             mPlayer.applyForceToCenter(mPlayer.getWorldVector(baseVector), true);
         }
+    }
+
+    private Vector2 getForwardVelocity() {
+        Vector2 currentNormal = mPlayer.getWorldVector(new Vector2(0, 1));
+        float dotProduct = currentNormal.dot(mPlayer.getLinearVelocity());
+        return new Vector2().mulAdd(currentNormal, dotProduct);
+    }
+
+    private Vector2 getLateralVelocity() {
+        Vector2 currentNormal = mPlayer.getWorldVector(new Vector2(1, 0));
+        float dotProduct = currentNormal.dot(mPlayer.getLinearVelocity());
+        return new Vector2().mulAdd(currentNormal, dotProduct);
     }
 
     private void handleInput() {
