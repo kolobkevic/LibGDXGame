@@ -1,83 +1,45 @@
 package ru.kolobkevic.libgdxgame.screens;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ScreenUtils;
-import ru.kolobkevic.libgdxgame.MyAtlasAnimation;
-import ru.kolobkevic.libgdxgame.MyInputProcessor;
-import ru.kolobkevic.libgdxgame.PhysX;
-import ru.kolobkevic.libgdxgame.enums.Actions;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import ru.kolobkevic.libgdxgame.enums.Drive;
+import ru.kolobkevic.libgdxgame.enums.Turn;
+import ru.kolobkevic.libgdxgame.tools.MapLoader;
 
-import java.util.HashMap;
+import static ru.kolobkevic.libgdxgame.Constants.*;
 
-public class GameScreen implements Screen {
-    private Actions actions;
-    private Game game;
-    private SpriteBatch batch;
-    private HashMap<Actions, MyAtlasAnimation> manAssets;
-    private Music music;
-    private Sound sound;
-    private MyInputProcessor myInputProcessor;
-    private OrthographicCamera camera;
-    private PhysX physX;
-    private Body body;
-    private TiledMap baseMap;
-    private OrthogonalTiledMapRenderer mapRenderer;
+public class GameScreen extends AbstractScreen {
+    private final SpriteBatch mBatch;
+    private final World mWorld;
+    private final Box2DDebugRenderer mBdr;
+    private final OrthographicCamera mCamera;
+    private final Viewport mViewport;
+    private final Body mPlayer;
+    private final MapLoader mMapLoader;
+    private Drive driveDirection;
+    private Turn turnDirection;
 
-    public GameScreen(Game game) {
-        this.game = game;
 
-        baseMap = new TmxMapLoader().load("map/BaseMap.tmx");
-        mapRenderer = new OrthogonalTiledMapRenderer(baseMap);
-        physX = new PhysX();
-
-        Array<RectangleMapObject> rectObjects = baseMap.getLayers().get("ObjectsStatic").getObjects().getByType(RectangleMapObject.class);
-        rectObjects.addAll(baseMap.getLayers().get("ObjectsDynamic").getObjects().getByType(RectangleMapObject.class));
-        for (int i = 0; i < rectObjects.size; i++) {
-            physX.addObject(rectObjects.get(i));
-        }
-
-        body = physX.addObject((RectangleMapObject) baseMap.getLayers().get("Hero").getObjects().get("Hero"));
-        body.setFixedRotation(true);
-
-        BodyDef def = new BodyDef();
-        FixtureDef fdef = new FixtureDef();
-        PolygonShape shape = new PolygonShape();
-
-        myInputProcessor = new MyInputProcessor();
-        Gdx.input.setInputProcessor(myInputProcessor);
-
-        music = Gdx.audio.newMusic(Gdx.files.internal("Juhani-Junkala-Title-Screen.mp3"));
-        music.setVolume(0.1f);
-        music.setLooping(true);
-        music.play();
-        System.out.println(music.isPlaying());
-
-        sound = Gdx.audio.newSound(Gdx.files.internal("Car_accelerating.mp3"));
-
-        batch = new SpriteBatch();
-
-        manAssets = new HashMap<>();
-        manAssets.put(Actions.STAND, new MyAtlasAnimation("atlas/myAtlas.atlas", "stand", 10, Animation.PlayMode.LOOP));
-        manAssets.put(Actions.RUN, new MyAtlasAnimation("atlas/myAtlas.atlas", "run", 10, Animation.PlayMode.LOOP));
-        actions = Actions.STAND;
-
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    public GameScreen() {
+        title = "game";
+        mBatch = new SpriteBatch();
+        mWorld = new World(GRAVITY, true);
+        mBdr = new Box2DDebugRenderer();
+        mCamera = new OrthographicCamera();
+        mCamera.zoom = DEFAULT_ZOOM;
+        mViewport = new FitViewport(640 / PPM, 480 / PPM, mCamera);
+        mMapLoader = new MapLoader(mWorld);
+        mPlayer = mMapLoader.getPlayer();
+        mPlayer.setLinearDamping(0.5f);
     }
 
     @Override
@@ -87,49 +49,90 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(1, 1, 1, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        handleInput();
+        processInput();
+        System.out.println(mPlayer.getAngularVelocity());
+        update(delta);
+        handleDrift();
+        draw();
+    }
 
-        camera.position.x = body.getPosition().x * physX.PPM;
-        camera.position.y = body.getPosition().y * physX.PPM;
-        camera.zoom = 2;
-        camera.update();
+    private void handleDrift() {
+        Vector2 forwardSpeed = getForwardVelocity();
+        Vector2 lateralSpeed = getLateralVelocity();
+        mPlayer.setLinearVelocity(forwardSpeed.x + lateralSpeed.x * DRIFT,
+                forwardSpeed.y + lateralSpeed.y * DRIFT);
+    }
 
-        mapRenderer.setView(camera);
-        mapRenderer.render();
-
-        manAssets.get(actions).setTime(Gdx.graphics.getDeltaTime());
-        body.applyForceToCenter(myInputProcessor.getOutForce(), true);
-
-        if (body.getLinearVelocity().len() < 0.6f) {
-            actions = Actions.STAND;
-        } else if (Math.abs(body.getLinearVelocity().x) > 0.6f) {
-            actions = Actions.RUN;
+    private void processInput() {
+        Vector2 baseVector = new Vector2(0, 0);
+        if (turnDirection == Turn.LEFT) {
+            mPlayer.setAngularVelocity(-TURN_SPEED);
+        } else if (turnDirection == Turn.RIGHT) {
+            mPlayer.setAngularVelocity(TURN_SPEED);
+        } else if (turnDirection == Turn.NONE && mPlayer.getAngularVelocity() != 0) {
+            mPlayer.setAngularVelocity(0f);
         }
-        manAssets.get(actions).setTime(Gdx.graphics.getDeltaTime());
-        if (!manAssets.get(actions).draw().isFlipX() & body.getLinearVelocity().x < -0.6f) {
-            manAssets.get(actions).draw().flip(true, false);
+
+        if (driveDirection == Drive.FORWARD) {
+            baseVector.set(0, DRIVE_SPEED);
+        } else if (driveDirection == Drive.BACKWARD) {
+            baseVector.set(0, -DRIVE_SPEED);
         }
-        if (manAssets.get(actions).draw().isFlipX() & body.getLinearVelocity().x > 0.6f) {
-            manAssets.get(actions).draw().flip(true, false);
+
+        if (!baseVector.isZero() && mPlayer.getLinearVelocity().len() < SLIDE_SPEED) {
+            mPlayer.applyForceToCenter(mPlayer.getWorldVector(baseVector), true);
+        }
+    }
+
+    private Vector2 getForwardVelocity() {
+        Vector2 currentNormal = mPlayer.getWorldVector(new Vector2(0, 1));
+        float dotProduct = currentNormal.dot(mPlayer.getLinearVelocity());
+        return new Vector2().mulAdd(currentNormal, dotProduct);
+    }
+
+    private Vector2 getLateralVelocity() {
+        Vector2 currentNormal = mPlayer.getWorldVector(new Vector2(1, 0));
+        float dotProduct = currentNormal.dot(mPlayer.getLinearVelocity());
+        return new Vector2().mulAdd(currentNormal, dotProduct);
+    }
+
+    private void handleInput() {
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            driveDirection = Drive.FORWARD;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            driveDirection = Drive.BACKWARD;
+        } else {
+            driveDirection = Drive.NONE;
         }
 
-        float x = body.getPosition().x * physX.PPM - 2.5f / camera.zoom;
-        float y = body.getPosition().y * physX.PPM - 2.5f / camera.zoom;
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            turnDirection = Turn.LEFT;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            turnDirection = Turn.RIGHT;
+        } else {
+            turnDirection = Turn.NONE;
+        }
+    }
 
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
-        batch.draw(manAssets.get(actions).draw(), x, y);
-        batch.end();
+    private void draw() {
+        mBatch.setProjectionMatrix(mCamera.combined);
+        mBdr.render(mWorld, mCamera.combined);
 
-        Gdx.graphics.setTitle(String.valueOf(body.getLinearVelocity()));
-        physX.step();
-        physX.debugDraw(camera);
+    }
+
+    private void update(final float delta) {
+        mCamera.position.set(mPlayer.getPosition(), 0);
+        mCamera.update();
+
+        mWorld.step(delta, 6, 2);
     }
 
     @Override
     public void resize(int width, int height) {
-        camera.viewportHeight = height;
-        camera.viewportWidth = width;
+        mViewport.update(width, height);
     }
 
     @Override
@@ -149,11 +152,9 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        sound.dispose();
-        music.dispose();
-        batch.dispose();
-        physX.dispose();
-        baseMap.dispose();
-        mapRenderer.dispose();
+        mBatch.dispose();
+        mWorld.dispose();
+        mBdr.dispose();
+        mMapLoader.dispose();
     }
 }
