@@ -3,14 +3,14 @@ package ru.kolobkevic.libgdxgame.tools;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
-import static ru.kolobkevic.libgdxgame.Constants.PPM;
+import static ru.kolobkevic.libgdxgame.constants.Constants.PPM;
 
 public class ShapeFactory {
     private ShapeFactory() {
     }
 
     public static Body createRectangle(final Vector2 position, final Vector2 size, final BodyDef.BodyType type,
-                                       final World world, float density) {
+                                       final World world, float density, boolean sensor) {
         final BodyDef bodyDef = new BodyDef();
         bodyDef.position.set(position.x / PPM, position.y / PPM);
         bodyDef.type = type;
@@ -21,6 +21,7 @@ public class ShapeFactory {
         final FixtureDef fDef = new FixtureDef();
         fDef.shape = shape;
         fDef.density = density;
+        fDef.isSensor = sensor;
 
         body.createFixture(fDef);
         shape.dispose();

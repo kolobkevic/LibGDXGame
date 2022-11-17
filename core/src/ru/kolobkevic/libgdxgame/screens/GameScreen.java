@@ -5,17 +5,16 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import ru.kolobkevic.libgdxgame.entities.Car;
 import ru.kolobkevic.libgdxgame.enums.Drive;
 import ru.kolobkevic.libgdxgame.enums.Turn;
 import ru.kolobkevic.libgdxgame.tools.MapLoader;
 
-import static ru.kolobkevic.libgdxgame.Constants.*;
+import static ru.kolobkevic.libgdxgame.constants.Constants.*;
 
 public class GameScreen extends AbstractScreen {
     private final SpriteBatch mBatch;
@@ -23,11 +22,8 @@ public class GameScreen extends AbstractScreen {
     private final Box2DDebugRenderer mBdr;
     private final OrthographicCamera mCamera;
     private final Viewport mViewport;
-    private final Body mPlayer;
+    private final Car mPlayer;
     private final MapLoader mMapLoader;
-    private Drive driveDirection;
-    private Turn turnDirection;
-
 
     public GameScreen() {
         title = "game";
@@ -36,10 +32,9 @@ public class GameScreen extends AbstractScreen {
         mBdr = new Box2DDebugRenderer();
         mCamera = new OrthographicCamera();
         mCamera.zoom = DEFAULT_ZOOM;
-        mViewport = new FitViewport(640 / PPM, 480 / PPM, mCamera);
+        mViewport = new FitViewport(RESOLUTION.x / PPM, RESOLUTION.y / PPM, mCamera);
         mMapLoader = new MapLoader(mWorld);
-        mPlayer = mMapLoader.getPlayer();
-        mPlayer.setLinearDamping(0.5f);
+        mPlayer = new Car(35.0f, 0.7f, 80.0f, mMapLoader, DRIVE_2WD, mWorld);
     }
 
     @Override
@@ -52,68 +47,36 @@ public class GameScreen extends AbstractScreen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         handleInput();
-        processInput();
-        System.out.println(mPlayer.getAngularVelocity());
         update(delta);
-        handleDrift();
         draw();
     }
 
-    private void handleDrift() {
-        Vector2 forwardSpeed = getForwardVelocity();
-        Vector2 lateralSpeed = getLateralVelocity();
-        mPlayer.setLinearVelocity(forwardSpeed.x + lateralSpeed.x * DRIFT,
-                forwardSpeed.y + lateralSpeed.y * DRIFT);
-    }
-
-    private void processInput() {
-        Vector2 baseVector = new Vector2(0, 0);
-        if (turnDirection == Turn.LEFT) {
-            mPlayer.setAngularVelocity(-TURN_SPEED);
-        } else if (turnDirection == Turn.RIGHT) {
-            mPlayer.setAngularVelocity(TURN_SPEED);
-        } else if (turnDirection == Turn.NONE && mPlayer.getAngularVelocity() != 0) {
-            mPlayer.setAngularVelocity(0f);
-        }
-
-        if (driveDirection == Drive.FORWARD) {
-            baseVector.set(0, DRIVE_SPEED);
-        } else if (driveDirection == Drive.BACKWARD) {
-            baseVector.set(0, -DRIVE_SPEED);
-        }
-
-        if (!baseVector.isZero() && mPlayer.getLinearVelocity().len() < SLIDE_SPEED) {
-            mPlayer.applyForceToCenter(mPlayer.getWorldVector(baseVector), true);
-        }
-    }
-
-    private Vector2 getForwardVelocity() {
-        Vector2 currentNormal = mPlayer.getWorldVector(new Vector2(0, 1));
-        float dotProduct = currentNormal.dot(mPlayer.getLinearVelocity());
-        return new Vector2().mulAdd(currentNormal, dotProduct);
-    }
-
-    private Vector2 getLateralVelocity() {
-        Vector2 currentNormal = mPlayer.getWorldVector(new Vector2(1, 0));
-        float dotProduct = currentNormal.dot(mPlayer.getLinearVelocity());
-        return new Vector2().mulAdd(currentNormal, dotProduct);
-    }
 
     private void handleInput() {
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            driveDirection = Drive.FORWARD;
+            mPlayer.setDriveDirection(Drive.FORWARD);
         } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            driveDirection = Drive.BACKWARD;
+            mPlayer.setDriveDirection(Drive.BACKWARD);
         } else {
-            driveDirection = Drive.NONE;
+            mPlayer.setDriveDirection(Drive.NONE);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            turnDirection = Turn.LEFT;
+            mPlayer.setTurnDirection(Turn.LEFT);
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            turnDirection = Turn.RIGHT;
+            mPlayer.setTurnDirection(Turn.RIGHT);
         } else {
-            turnDirection = Turn.NONE;
+            mPlayer.setTurnDirection(Turn.NONE);
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            Gdx.app.exit();
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+            mCamera.zoom -= CAMERA_ZOOM;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+            mCamera.zoom += CAMERA_ZOOM;
         }
     }
 
@@ -124,9 +87,9 @@ public class GameScreen extends AbstractScreen {
     }
 
     private void update(final float delta) {
-        mCamera.position.set(mPlayer.getPosition(), 0);
+        mPlayer.update(delta);
+        mCamera.position.set(mPlayer.getBody().getPosition(), 0);
         mCamera.update();
-
         mWorld.step(delta, 6, 2);
     }
 
