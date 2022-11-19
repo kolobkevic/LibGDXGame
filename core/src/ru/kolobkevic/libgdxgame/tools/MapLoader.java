@@ -11,7 +11,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
-import static ru.kolobkevic.libgdxgame.Constants.MAP_NAME;
+import static ru.kolobkevic.libgdxgame.constants.Constants.MAP_NAME;
 
 
 public class MapLoader implements Disposable {
@@ -31,16 +31,17 @@ public class MapLoader implements Disposable {
             ShapeFactory.createRectangle(
                     new Vector2(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2),
                     new Vector2(rectangle.width / 2, rectangle.height / 2),
-                    BodyDef.BodyType.StaticBody, mWorld, 1.0f);
+                    BodyDef.BodyType.StaticBody, mWorld, 1.0f, false);
         }
     }
 
     public Body getPlayer() {
         final Rectangle player = mMap.getLayers().get(MAP_PLAYER).getObjects().getByType(RectangleMapObject.class).
                 get(0).getRectangle();
-        return ShapeFactory.createRectangle(new Vector2(player.x + player.width / 2, player.y + player.height / 2),
+        return ShapeFactory.createRectangle(
+                new Vector2(player.x + player.width / 2, player.y + player.height / 2),
                 new Vector2(player.width / 2, player.height / 2),
-                BodyDef.BodyType.DynamicBody, mWorld, 0.4f);
+                BodyDef.BodyType.DynamicBody, mWorld, 0.4f, false);
     }
 
     @Override

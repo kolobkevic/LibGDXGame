@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="128" tileheight="128" infinite="0" nextlayerid="9" nextobjectid="54">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-down" width="100" height="54" tilewidth="128" tileheight="128" infinite="0" nextlayerid="9" nextobjectid="54">
  <objectgroup id="3" name="wall">
   <object id="26" name="wall" x="0.542" y="2539.94" width="3839.88" height="20.058"/>
   <object id="27" name="wall" x="506.394" y="2047.67" width="2827.56" height="20.2121"/>
