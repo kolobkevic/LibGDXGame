@@ -89,11 +89,11 @@ public class Car extends BodyHolder {
         }
     }
 
-    public void setmDriveDirection(final Drive driveDirection) {
+    public void setDriveDirection(final Drive driveDirection) {
         this.mDriveDirection = driveDirection;
     }
 
-    public void setmTurnDirection(final Turn turnDirection) {
+    public void setTurnDirection(final Turn turnDirection) {
         this.mTurnDirection = turnDirection;
     }
 

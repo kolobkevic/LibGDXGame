@@ -54,19 +54,19 @@ public class GameScreen extends AbstractScreen {
 
     private void handleInput() {
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            mPlayer.setmDriveDirection(Drive.FORWARD);
+            mPlayer.setDriveDirection(Drive.FORWARD);
         } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            mPlayer.setmDriveDirection(Drive.BACKWARD);
+            mPlayer.setDriveDirection(Drive.BACKWARD);
         } else {
-            mPlayer.setmDriveDirection(Drive.NONE);
+            mPlayer.setDriveDirection(Drive.NONE);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            mPlayer.setmTurnDirection(Turn.LEFT);
+            mPlayer.setTurnDirection(Turn.LEFT);
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            mPlayer.setmTurnDirection(Turn.RIGHT);
+            mPlayer.setTurnDirection(Turn.RIGHT);
         } else {
-            mPlayer.setmTurnDirection(Turn.NONE);
+            mPlayer.setTurnDirection(Turn.NONE);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
@@ -83,7 +83,6 @@ public class GameScreen extends AbstractScreen {
     private void draw() {
         mBatch.setProjectionMatrix(mCamera.combined);
         mBdr.render(mWorld, mCamera.combined);
-
     }
 
     private void update(final float delta) {
