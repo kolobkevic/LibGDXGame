@@ -7,14 +7,12 @@ import com.badlogic.gdx.physics.box2d.World;
 import ru.kolobkevic.libgdxgame.enums.Drive;
 
 public abstract class BodyHolder {
+    private static final float DRIFT_OFFSET = 1f;
+    private final Body mBody;
+    private final int mId;
     protected Vector2 mForwardSpeed;
     protected Vector2 mLateralSpeed;
-
-    private static final float DRIFT_OFFSET = 1f;
-
-    private final Body mBody;
     protected float mDrift = 1;
-    private final int mId;
 
     public BodyHolder(final Body mBody) {
         this.mBody = mBody;
@@ -27,7 +25,7 @@ public abstract class BodyHolder {
         this.mId = id;
     }
 
-    public void setDrift(float drift) {
+    public void setDrift(final float drift) {
         this.mDrift = drift;
     }
 
@@ -38,7 +36,7 @@ public abstract class BodyHolder {
     public void update(final float delta) {
         if (mDrift < 1) {
             mForwardSpeed = getForwardVelocity();
-            mLateralSpeed = getLocalVelocity();
+            mLateralSpeed = getLateralVelocity();
             if ((mLateralSpeed.len() < DRIFT_OFFSET) && (mId > 1)) {
                 stopDrift();
             } else {
@@ -55,14 +53,14 @@ public abstract class BodyHolder {
     }
 
     private Vector2 getForwardVelocity() {
-        Vector2 currentNormal = mBody.getWorldVector(new Vector2(0, 1));
-        float dotProduct = currentNormal.dot(mBody.getLinearVelocity());
+        final Vector2 currentNormal = mBody.getWorldVector(new Vector2(0, 1));
+        final float dotProduct = currentNormal.dot(mBody.getLinearVelocity());
         return new Vector2().mulAdd(currentNormal, dotProduct);
     }
 
     private Vector2 getLateralVelocity() {
-        Vector2 currentNormal = mBody.getWorldVector(new Vector2(1, 0));
-        float dotProduct = currentNormal.dot(mBody.getLinearVelocity());
+        final Vector2 currentNormal = mBody.getWorldVector(new Vector2(1, 0));
+        final float dotProduct = currentNormal.dot(mBody.getLinearVelocity());
         return new Vector2().mulAdd(currentNormal, dotProduct);
     }
 

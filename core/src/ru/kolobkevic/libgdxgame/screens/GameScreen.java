@@ -54,28 +54,28 @@ public class GameScreen extends AbstractScreen {
 
     private void handleInput() {
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            mPlayer.setDriveDirection(Drive.FORWARD);
+            mPlayer.setmDriveDirection(Drive.FORWARD);
         } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            mPlayer.setDriveDirection(Drive.BACKWARD);
+            mPlayer.setmDriveDirection(Drive.BACKWARD);
         } else {
-            mPlayer.setDriveDirection(Drive.NONE);
+            mPlayer.setmDriveDirection(Drive.NONE);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            mPlayer.setTurnDirection(Turn.LEFT);
+            mPlayer.setmTurnDirection(Turn.LEFT);
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            mPlayer.setTurnDirection(Turn.RIGHT);
+            mPlayer.setmTurnDirection(Turn.RIGHT);
         } else {
-            mPlayer.setTurnDirection(Turn.NONE);
+            mPlayer.setmTurnDirection(Turn.NONE);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.C)) {
             mCamera.zoom -= CAMERA_ZOOM;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.Z)) {
             mCamera.zoom += CAMERA_ZOOM;
         }
     }

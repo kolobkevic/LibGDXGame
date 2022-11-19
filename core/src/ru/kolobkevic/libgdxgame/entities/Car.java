@@ -1,7 +1,6 @@
 package ru.kolobkevic.libgdxgame.entities;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.PrismaticJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
@@ -26,8 +25,8 @@ public class Car extends BodyHolder {
     private float mCurrentMaxSpeed;
     private final float mRegularMaxSpeed;
     private float mAcceleration;
-    private Drive driveDirection;
-    private Turn turnDirection;
+    private Drive mDriveDirection;
+    private Turn mTurnDirection;
 
     public Car(final float maxSpeed, final float drift, final float acceleration, final MapLoader mapLoader,
                int wheelDrive, World world) {
@@ -40,7 +39,7 @@ public class Car extends BodyHolder {
         createWheels(world, wheelDrive);
     }
 
-    private void createWheels(World world, int wheelDrive) {
+    private void createWheels(final World world, final int wheelDrive) {
         for (int i = 0; i < 4; i++) {
             float xOffset = 0;
             float yOffset = 0;
@@ -64,18 +63,18 @@ public class Car extends BodyHolder {
                     break;
             }
 
-            boolean powered = (wheelDrive == DRIVE_4WD) || (wheelDrive == DRIVE_2WD && i < 2);
+            final boolean powered = (wheelDrive == DRIVE_4WD) || (wheelDrive == DRIVE_2WD && i < 2);
 
             Wheel wheel = new Wheel(
                     new Vector2(getBody().getPosition().x * PPM + xOffset, getBody().getPosition().y * PPM + yOffset),
-                    WHEEL_SIZE, BodyDef.BodyType.DynamicBody, world, WHEELS_DENSITY, i, this, powered);
+                    WHEEL_SIZE, world, i, this, powered);
             if (i < 2) {
-                RevoluteJointDef jointDef = new RevoluteJointDef();
+                final RevoluteJointDef jointDef = new RevoluteJointDef();
                 jointDef.initialize(getBody(), wheel.getBody(), wheel.getBody().getWorldCenter());
                 jointDef.enableMotor = false;
                 world.createJoint(jointDef);
             } else {
-                PrismaticJointDef jointDef = new PrismaticJointDef();
+                final PrismaticJointDef jointDef = new PrismaticJointDef();
                 jointDef.initialize(getBody(), wheel.getBody(), wheel.getBody().getWorldCenter(), new Vector2(1, 0));
                 jointDef.enableLimit = true;
                 jointDef.lowerTranslation = jointDef.upperTranslation = 0;
@@ -90,22 +89,22 @@ public class Car extends BodyHolder {
         }
     }
 
-    public void setDriveDirection(Drive driveDirection) {
-        this.driveDirection = driveDirection;
+    public void setmDriveDirection(final Drive driveDirection) {
+        this.mDriveDirection = driveDirection;
     }
 
-    public void setTurnDirection(Turn turnDirection) {
-        this.turnDirection = turnDirection;
+    public void setmTurnDirection(final Turn turnDirection) {
+        this.mTurnDirection = turnDirection;
     }
 
     private void processInput() {
-        Vector2 baseVector = new Vector2(0, 0);
-        if (turnDirection == Turn.LEFT) {
+        final Vector2 baseVector = new Vector2(0, 0);
+        if (mTurnDirection == Turn.LEFT) {
             if (mCurrentWheelAngle < 0) {
                 mCurrentWheelAngle = 0;
             }
             mCurrentWheelAngle = Math.min(mCurrentWheelAngle += WHEEL_TURN_INCREMENT, MAX_WHEEL_ANGLE);
-        } else if (turnDirection == Turn.RIGHT) {
+        } else if (mTurnDirection == Turn.RIGHT) {
             if (mCurrentWheelAngle > 0) {
                 mCurrentWheelAngle = 0;
             }
@@ -114,13 +113,13 @@ public class Car extends BodyHolder {
             mCurrentWheelAngle = 0;
         }
 
-        for (Wheel wheel : mFrontWheels) {
+        for (final Wheel wheel : mFrontWheels) {
             wheel.setAngle(mCurrentWheelAngle);
         }
 
-        if (driveDirection == Drive.FORWARD) {
+        if (mDriveDirection == Drive.FORWARD) {
             baseVector.set(0, mAcceleration);
-        } else if (driveDirection == Drive.BACKWARD) {
+        } else if (mDriveDirection == Drive.BACKWARD) {
             if (direction() == Drive.BACKWARD) {
                 baseVector.set(0, -mAcceleration * REVERSE_POWER);
             } else if (direction() == Drive.FORWARD) {
@@ -132,7 +131,7 @@ public class Car extends BodyHolder {
         mCurrentMaxSpeed = mRegularMaxSpeed;
 
         if (getBody().getLinearVelocity().len() < mCurrentMaxSpeed) {
-            for (Wheel wheel : mWheels) {
+            for (final Wheel wheel : mWheels) {
                 if(wheel.isPowered()) {
                     wheel.getBody().applyForceToCenter(wheel.getBody().getWorldVector(baseVector), true);
                 }
@@ -144,7 +143,7 @@ public class Car extends BodyHolder {
     public void update(float delta) {
         super.update(delta);
         processInput();
-        for (Wheel wheel : mWheels) {
+        for (final Wheel wheel : mWheels) {
             wheel.update(delta);
         }
     }
